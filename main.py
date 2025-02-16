@@ -2,6 +2,7 @@ import logging, os
 from dotenv import load_dotenv
 from datasets import load_dataset, Dataset
 import duckdb
+import polars as pl
 from src.create_hf_dataset import create_hf_dataset, check_hf_dataset_exists
 from src.chunk_and_embed_dataset import chunk_and_embed_dataset
 from src.duckdb_utils import setup_db, create_fts_index, full_text_search
@@ -33,15 +34,18 @@ def main():
         create_hf_dataset(Dataset.from_polars(embeddings_ds)) # 8500s or 2.3h
     
     dataset = dataset_info["dataset"]
-
+    dataset = dataset.with_columns((pl.col("id") + ":" + pl.col("chunk_number").cast(str)).alias("chunk_id")).drop(["id","chunk_number"])
     with duckdb.connect() as con:
         setup_db(con=con, dataset=dataset)
-        create_fts_index(con=con) ## é necessário criar uma chave única que aja com id único (e.g., file_chunk_id) para o FTS do duckdb
-        query = "Qual é o astro mais interessante do espaço?"
+        create_fts_index(con=con)
+        query = "Qual é a ciência que estuda o espaço?"
         res = full_text_search(con=con, query=query, top_k=10)
         print(res)
-
-        ### TODO: Converter o código acima num módulo funcional e passá-lo para o folder src.
+        
+        ### TODO: Módulo funcional mas é necessário simplificar: 
+            # reordenar colunas do df; 
+            # abstrair variáveis nos queries de SQL para melhor configurabilidade;
+            # mover módulo para src
         ### TODO: usar vicinity para criar uma vector store em ficheiro.
         ### TODO: Gradio app que permita receber queries e devolva as respostas
         ### TODO: procurar perceber se este método é passível de se escalar a partir de datasets existentes e definições do utilizador. 
