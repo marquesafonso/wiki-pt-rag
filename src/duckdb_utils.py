@@ -1,6 +1,5 @@
 import duckdb
 import polars as pl
-from datasets import load_dataset
 
 def setup_db(con:duckdb.DuckDBPyConnection, dataset: pl.DataFrame):
         con.execute(f"""CREATE TABLE IF NOT EXISTS documents (
