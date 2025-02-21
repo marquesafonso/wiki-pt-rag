@@ -15,7 +15,7 @@ def check_hf_dataset_exists():
     HF_USER = os.getenv("USER")
     DATASET_NAME = os.getenv("DATASET_NAME")
     try:
-        dataset = datasets.load_dataset(f"{HF_USER}/{DATASET_NAME}", split=f"train[:10]", token=HF_TOKEN).to_polars()
+        dataset = datasets.load_dataset(f"{HF_USER}/{DATASET_NAME}", split=f"train[:100000]", token=HF_TOKEN).to_polars()
         return {"created": True, "dataset": dataset}
     except Exception as e:
         return {"created": False, "exception": e}
