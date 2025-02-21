@@ -29,14 +29,21 @@ def full_text_search(con:duckdb.DuckDBPyConnection,
                     query:str,
                     top_k:int|None = 10) -> pl.DataFrame:
     db_query = f"""
-    SELECT url, chunk, chunk_id, score
+    SELECT url, chunk, chunk_id, fts_score
     FROM (
-        SELECT *, fts_main_documents.match_bm25(chunk_id, '{query}') AS score
+        SELECT *, fts_main_documents.match_bm25(chunk_id, '{query}') AS fts_score
         FROM documents
         )
-    WHERE score IS NOT NULL
-    ORDER BY score DESC
+    WHERE fts_score IS NOT NULL
+    ORDER BY fts_score DESC
     LIMIT {top_k}
     """
-    results = con.execute(db_query).df()
+    results = con.execute(db_query).pl()
     return results
+
+def get_fts_results(dataset:pl.DataFrame, query:str, top_k:int):
+    with duckdb.connect() as con:
+        setup_db(con=con, dataset=dataset)
+        create_fts_index(con=con)
+        res = full_text_search(con=con, query=query, top_k=top_k)
+    return res
