@@ -3,13 +3,10 @@ import polars as pl
 
 def setup_db(con:duckdb.DuckDBPyConnection, dataset: pl.DataFrame):
         con.execute(f"""CREATE TABLE IF NOT EXISTS documents (
-                        url VARCHAR,
-                        title VARCHAR,
-                        chunk TEXT,
-                        embeddings FLOAT[256],
-                        chunk_id VARCHAR
+                        chunk_id VARCHAR,
+                        chunk TEXT
                     )""")
-        con.sql("INSERT INTO documents SELECT * FROM dataset")
+        con.sql("INSERT INTO documents SELECT chunk_id, chunk FROM dataset")
 
 def create_fts_index(con: duckdb.DuckDBPyConnection):
         con.install_extension("fts")
@@ -26,20 +23,23 @@ def create_fts_index(con: duckdb.DuckDBPyConnection):
 
 
 def full_text_search(con:duckdb.DuckDBPyConnection,
-                    query:str) -> pl.DataFrame:
+                    query:str,
+                    top_k:int) -> pl.DataFrame:
     db_query = f"""
-    SELECT url, chunk, chunk_id, fts_score
+    SELECT chunk_id, fts_score
     FROM (
         SELECT *, fts_main_documents.match_bm25(chunk_id, '{query}') AS fts_score
         FROM documents
         )
+    WHERE fts_score IS NOT NULL
+    LIMIT {top_k}
     """
     results = con.execute(db_query).pl()
     return results
 
-def get_fts_results(dataset:pl.DataFrame, query:str):
+def get_fts_results(dataset:pl.DataFrame, query:str, top_k:int):
     with duckdb.connect() as con:
         setup_db(con=con, dataset=dataset)
         create_fts_index(con=con)
-        res = full_text_search(con=con, query=query)
+        res = full_text_search(con=con, query=query, top_k=top_k)
     return res
