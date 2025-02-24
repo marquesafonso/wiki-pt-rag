@@ -1,3 +1,4 @@
+import os
 import duckdb
 import polars as pl
 
@@ -7,6 +8,7 @@ def setup_db(con:duckdb.DuckDBPyConnection, dataset: pl.DataFrame):
                         chunk TEXT
                     )""")
         con.sql("INSERT INTO documents SELECT chunk_id, chunk FROM dataset")
+        con.commit()
 
 def create_fts_index(con: duckdb.DuckDBPyConnection):
         con.install_extension("fts")
@@ -20,6 +22,7 @@ def create_fts_index(con: duckdb.DuckDBPyConnection):
         stemmer = 'portuguese', ignore = '(\\.|[^a-z])+', strip_accents = 1, lower = 1, overwrite = 0)
         """
         con.execute(query)
+        con.commit()
 
 
 def full_text_search(con:duckdb.DuckDBPyConnection,
@@ -37,9 +40,12 @@ def full_text_search(con:duckdb.DuckDBPyConnection,
     results = con.execute(db_query).pl()
     return results
 
-def get_fts_results(dataset:pl.DataFrame, query:str, top_k:int):
-    with duckdb.connect() as con:
-        setup_db(con=con, dataset=dataset)
-        create_fts_index(con=con)
+def get_fts_results(dataset:pl.DataFrame, path:str, query:str, top_k:int):
+    if not os.path.exists(path):
+        os.makedirs(os.path.dirname(path))
+        with duckdb.connect(path) as con:
+            setup_db(con=con, dataset=dataset)
+            create_fts_index(con=con)
+    with duckdb.connect(path) as con:
         res = full_text_search(con=con, query=query, top_k=top_k)
     return res
