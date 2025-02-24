@@ -5,6 +5,7 @@
 
 ## Análise de sensibilidade à escrita em disco da vector store (vicinity:usearch)
 
++ Query: "Qual é a ciência que estuda o espaço, os astros e as estrelas?"
 + Modelo: sentence-transformers/static-similarity-mrl-multilingual-v1
 + Backend: USEARCH
 + Alpha: 0.5
@@ -18,6 +19,7 @@
     
 ## Análise de sensibilidade à escrita em disco da base de dados com índice (duckdb:fts)
 
++ Query: "Qual é a ciência que estuda o espaço, os astros e as estrelas?"
 + Vector store com 2.052.058 linhas mantida constante
 + FTS params: [stemmer = 'portuguese', ignore = '(\\.|[^a-z])+', strip_accents = 1, lower = 1, overwrite = 0]
 + Alpha: 0.5
@@ -31,11 +33,12 @@
 
 ## Análise de sensibilidade ao parâmetro Top K
 
++ Query: "Qual é a ciência que estuda o espaço, os astros e as estrelas?"
 + Vector store completa linhas mantida constante
 + Base de dados completa mantida constante
 + Alpha: 0.5
 + Unidade: segundos
 
 | Tempo (s) / Top k | 10 | 100 | 1000 | 5.000 | 10.000 | 50.000 | 100.000 |
-| :------- | :---: | :---: | :---: | :---: | :---: | :---: |
-| Sem índice | 10.36 | 10.25 | 10.73 | 11.20 | 10.58 |  | 12.32 |
+| :------- | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
+| Sem índice | 10.36 | 10.25 | 10.73 | 11.20 | 10.58 | 11.04 | 12.32 |
