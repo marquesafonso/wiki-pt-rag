@@ -42,3 +42,47 @@
 | Tempo (s) / Top k | 10 | 100 | 1000 | 5.000 | 10.000 | 50.000 | 100.000 |
 | :------- | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
 | Sem índice | 10.36 | 10.25 | 10.73 | 11.20 | 10.58 | 11.04 | 12.32 |
+
+## Análise de compressão da base de dados duckdb com indice fts
+
+Situação base:
+```
+def get_fts_results(dataset:pl.DataFrame, path:str, query:str, top_k:int):
+    if not os.path.exists(path):
+        os.makedirs(os.path.dirname(path))
+        with duckdb.connect(path) as con:
+            setup_db(con=con, dataset=dataset)
+            create_fts_index(con=con)
+    with duckdb.connect(path) as con:
+        res = full_text_search(con=con, query=query, top_k=top_k)
+    return res
+```
+
+Tentativa de compressão da base de dados:
+```
+def export_db(con:duckdb.DuckDBPyConnection, path:str):
+    con.sql(f"""EXPORT DATABASE '{path}' (
+            FORMAT PARQUET,
+            COMPRESSION ZSTD);""")
+
+def import_db(con:duckdb.DuckDBPyConnection, path:str):
+    con.sql(f"PRAGMA import_database('{path}');")
+    return con
+
+def get_fts_results(dataset:pl.DataFrame, path:str, query:str, top_k:int):
+    if not os.path.exists(path):
+        with duckdb.connect() as con:
+            setup_db(con=con, dataset=dataset)
+            create_fts_index(con=con)
+            export_db(con=con, path=path)
+    with duckdb.connect() as con:
+        con = import_db(con=con, path=path)
+        res = full_text_search(con=con, query=query, top_k=top_k)
+    return res
+```
+
+Para o mesmo query das experiências anteriores, quando comparado com a utilização do metódo duckdb.connect() numa base de dados em disco, temos o seguinte resultados:
+
+| Query / Método | Com compressão (~1GB) | Sem compressão (~5GB) |
+| :------- | :---: | :---: |
+| Qual é a ciência que estuda o espaço, os astros e as estrelas? |  24 s | 12 s |
