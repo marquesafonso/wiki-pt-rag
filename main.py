@@ -38,6 +38,8 @@ def search(query:str, num_results: int):
     EMBEDDING_MODEL = os.getenv("EMBEDDING_MODEL")
     ALPHA = float(os.getenv("ALPHA"))
     TOP_K = int(os.getenv("TOP_K"))
+    REPO_ID = f"{os.getenv('USER')}/{VSS_INDEX_PATH}"
+    HF_TOKEN = os.getenv("HF_TOKEN")
     embedder = SentenceTransformer(EMBEDDING_MODEL, truncate_dim=256)
     query_vector = embedder.encode(query.strip()).tolist()
     dataset_info = check_hf_dataset_exists()
@@ -56,7 +58,7 @@ def search(query:str, num_results: int):
     dataset = dataset_info["dataset"]
     dataset:pl.DataFrame = dataset.with_columns((pl.col("id") + ":" + pl.col("chunk_number").cast(str)).alias("chunk_id")).drop(["id","chunk_number"])
     fts_res = get_fts_results(dataset=dataset, path=FTS_INDEX_PATH, query=query,top_k=TOP_K)
-    vss_res = get_vss_results(dataset=dataset, path=VSS_INDEX_PATH, query_vector=query_vector, top_k=TOP_K)
+    vss_res = get_vss_results(dataset=dataset, repo_id=REPO_ID, token=HF_TOKEN, query_vector=query_vector, top_k=TOP_K)
     ftext_df = dataset.join(fts_res, on='chunk_id', how='right').fill_null(0.0)
     combined_res = ftext_df.join(vss_res, on='chunk_id', how='full').fill_null(0.0)
     max_fts, max_vss = combined_res["fts_score"].max(), combined_res["vss_score"].max()

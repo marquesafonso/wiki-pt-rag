@@ -1926,16 +1926,16 @@ wheels = [
 
 [[package]]
 name = "vicinity"
-version = "0.4.0"
+version = "0.4.1"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "numpy" },
     { name = "orjson" },
     { name = "tqdm" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/05/58/70cc16d8530e123dbfd5f5debc9664f104244803d3f613fd28572bd883c7/vicinity-0.4.0.tar.gz", hash = "sha256:93130eafed2acfede1f980927e371f675705e6cb79c66f01c8a159da791ede2a", size = 1546223 }
+sdist = { url = "https://files.pythonhosted.org/packages/5b/7b/7bd72254cab3721980bc790e17e07706fecfdc1da03b9336fd154c78fec1/vicinity-0.4.1.tar.gz", hash = "sha256:9102405753615b3e633ec77829faf53369335c7e507e4f3d0570a328d5f548c9", size = 1614213 }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/84/6b/5621cf995e6fab253f7d1988ef02873db91318778005b9a04d2b5f42183a/vicinity-0.4.0-py3-none-any.whl", hash = "sha256:4c13532589e3a4906479015253e424c162345e441c43385ae2865791ccd4dd88", size = 25990 },
+    { url = "https://files.pythonhosted.org/packages/69/e1/9ec5eb35238102df383894016ccbde6a9726d7623da9ca478ac2032faaab/vicinity-0.4.1-py3-none-any.whl", hash = "sha256:7b458047360f74136bf0b070a2505bbfc13352a7033b50a609edbecfe0084a1d", size = 29187 },
 ]
 
 [package.optional-dependencies]
@@ -2009,7 +2009,7 @@ requires-dist = [
     { name = "polars", specifier = ">=1.21.0" },
     { name = "python-dotenv", specifier = ">=1.0.1" },
     { name = "sentence-transformers", specifier = ">=3.4.0" },
-    { name = "vicinity", extras = ["usearch"], specifier = ">=0.4.0" },
+    { name = "vicinity", extras = ["usearch"], specifier = ">=0.4.1" },
 ]
 
 [[package]]
