@@ -15,7 +15,7 @@ def create_vector_store(dataset:pl.DataFrame, repo_id:str, token:str):
     
 def get_vss_results(dataset:pl.DataFrame, repo_id:str, token:str, query_vector:list, top_k:int):
     try:
-        vector_store = Vicinity.load_from_hub(repo_id=repo_id)
+        vector_store = Vicinity.load_from_hub(repo_id=repo_id, token=token)
     except DatasetNotFoundError:
         vector_store = create_vector_store(dataset=dataset, repo_id=repo_id, token=token)
     schema = pl.Schema(schema={"chunk_id":pl.String(), "vss_score": pl.Float32})

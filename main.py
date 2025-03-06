@@ -12,22 +12,22 @@ from chonkie import SemanticChunker
 from sentence_transformers import SentenceTransformer
 
 def app():
-    with gr.Blocks() as demo:
+    with gr.Blocks(theme=gr.themes.Ocean()) as demo:
         gr.Markdown("""# Information Retrieval - PT Wikipedia""")
         query = gr.Textbox(label="Query")
+        alpha = gr.Slider(0, 1, value=0.5, step=0.05, label="FTS weight")
         num_results = gr.Slider(5, 20, value=10, step=1, label="Number of results")
         btn = gr.Button("Search")
         results = gr.Dataframe()
-        btn.click(fn=search, inputs=[query,num_results], outputs=[results])
+        btn.click(fn=search, inputs=[query,alpha, num_results], outputs=[results])
     demo.launch(share=False)  # set to True to share as a public
 
 
 @timer
-def search(query:str, num_results: int):
+def search(query:str, alpha:float, num_results: int):
     load_dotenv()
-    logging.basicConfig(filename=f'./logs/main.log',
-                    encoding='utf-8',
-                    level=logging.DEBUG,
+    logging.basicConfig(encoding='utf-8',
+                    level=logging.INFO,
                     format='%(asctime)s %(levelname)s %(message)s',
                     datefmt='%m/%d/%Y %I:%M:%S %p')
     ORIGIN_DATASET = os.getenv("ORIGIN_DATASET")
@@ -36,10 +36,10 @@ def search(query:str, num_results: int):
     VSS_INDEX_PATH = os.getenv("VSS_INDEX_PATH")
     FTS_INDEX_PATH = os.getenv("FTS_INDEX_PATH")
     EMBEDDING_MODEL = os.getenv("EMBEDDING_MODEL")
-    ALPHA = float(os.getenv("ALPHA"))
     TOP_K = int(os.getenv("TOP_K"))
     REPO_ID = f"{os.getenv('USER')}/{VSS_INDEX_PATH}"
     HF_TOKEN = os.getenv("HF_TOKEN")
+    ALPHA = alpha
     embedder = SentenceTransformer(EMBEDDING_MODEL, truncate_dim=256)
     query_vector = embedder.encode(query.strip()).tolist()
     dataset_info = check_hf_dataset_exists()

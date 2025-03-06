@@ -86,3 +86,30 @@ Para o mesmo query das experiências anteriores, quando comparado com a utiliza�
 | Query / Método | Com compressão (~1GB) | Sem compressão (~5GB) |
 | :------- | :---: | :---: |
 | Qual é a ciência que estuda o espaço, os astros e as estrelas? |  24 s | 12 s |
+
+# Experiência de quantização dos embeddings (int8)
+
+```
+#src.vicinity_vss.py
+def create_vector_store(dataset:pl.DataFrame, repo_id:str, token:str):
+    vector_store = Vicinity.from_vectors_and_items(
+        vectors=sentence_transformers.quantize_embeddings(
+            embeddings=np.array(dataset["embeddings"].to_list()).astype(np.float32),
+            precision="int8"
+        ),
+        items=dataset["chunk_id"].to_list(),
+        backend_type=Backend.USEARCH,
+        metric=Metric.COSINE
+    )
+    vector_store.push_to_hub(repo_id=repo_id, token=token, private=True)
+    return vector_store
+
+#main.py
+...
+query_vector = sentence_transformers.quantize_embeddings(embeddings=embedder.encode(query.strip()), precision="float16")
+...
+```
+
+Perda substantiva de qualidadeda representação vectorial e respostas obtidas.
+
+Poder-se-á testar uma outra configuração com embeddings binários + reranking.
