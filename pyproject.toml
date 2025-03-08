@@ -8,9 +8,11 @@ dependencies = [
     "chonkie[semantic]>=0.4.1",
     "datasets>=3.2.0",
     "duckdb>=1.2.0",
+    "gradio-client>=1.7.1",
     "gradio>=5.17.1",
     "polars>=1.21.0",
     "python-dotenv>=1.0.1",
     "sentence-transformers>=3.4.0",
     "vicinity[usearch]>=0.4.1",
+    "lmstudio>=1.0.1",
 ]

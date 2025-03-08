@@ -7,8 +7,9 @@ def export_db(con:duckdb.DuckDBPyConnection, path:str):
             FORMAT PARQUET,
             COMPRESSION ZSTD);""")
 
-def import_db(con:duckdb.DuckDBPyConnection, path:str):
-    con.sql(f"PRAGMA import_database('{path}');")
+def import_db(path:str):
+    with duckdb.connect(path) as con:
+        con.sql(f"PRAGMA import_database('{path}');")
     return con
 
 def setup_db(con:duckdb.DuckDBPyConnection, dataset: pl.DataFrame):
