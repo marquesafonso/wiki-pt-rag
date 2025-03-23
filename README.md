@@ -3,6 +3,8 @@
 + Chunking semântico utilizando o modelo estático: sentence-transformers/static-similarity-mrl-multilingual-v1
 + Demorou aproximadamente 8500s or 2.3h
 
+<image src="example.png"/>
+
 ## Análise de sensibilidade à escrita em disco da vector store (vicinity:usearch)
 
 + Query: "Qual é a ciência que estuda o espaço, os astros e as estrelas?"
@@ -110,6 +112,6 @@ query_vector = sentence_transformers.quantize_embeddings(embeddings=embedder.enc
 ...
 ```
 
-Perda substantiva de qualidadeda representação vectorial e respostas obtidas.
+Perda substantiva de qualidade da representação vectorial e respostas obtidas.
 
 Poder-se-á testar uma outra configuração com embeddings binários + reranking.

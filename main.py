@@ -14,13 +14,21 @@ from sentence_transformers import SentenceTransformer
 def app():
     with gr.Blocks(theme=gr.themes.Ocean()) as demo:
         gr.Markdown("""# Information Retrieval - PT Wikipedia""")
-        query = gr.Textbox(label="Query")
-        alpha = gr.Slider(0, 1, value=0.5, step=0.05, label="FTS weight")
-        num_results = gr.Slider(5, 20, value=10, step=1, label="Number of results")
-        btn = gr.Button("Search")
-        results = gr.Dataframe()
-        btn.click(fn=search, inputs=[query,alpha, num_results], outputs=[results])
-    demo.launch(share=False)  # set to True to share as a public
+        examples = [["Qual é a ciência que estuda o espaço, os astros e as estrelas?"]]
+        gr.Interface(
+            fn=search,
+            inputs=[
+                gr.Textbox(label="Query"),
+                gr.Slider(0, 1, value=0.5, step=0.05, label="FTS weight"),
+                gr.Slider(5, 20, value=10, step=1, label="Number of results"),
+            ],
+            outputs=[
+                gr.Dataframe()
+            ],
+            examples=examples,
+            flagging_mode="never"
+        )
+        demo.launch(share=False)  # set to True to share as a public
 
 
 @timer
