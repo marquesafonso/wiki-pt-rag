@@ -19,8 +19,8 @@ def app():
             fn=search,
             inputs=[
                 gr.Textbox(label="Query"),
-                gr.Slider(0, 1, value=0.5, step=0.05, label="FTS weight"),
-                gr.Slider(5, 20, value=10, step=1, label="Number of results"),
+                gr.Slider(0, 1, value=0.3, step=0.05, label="FTS weight"),
+                gr.Slider(3, 20, value=10, step=1, label="Number of results"),
             ],
             outputs=[
                 gr.Dataframe()
