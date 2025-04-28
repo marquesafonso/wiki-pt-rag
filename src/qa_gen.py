@@ -39,15 +39,6 @@ def format_prompt(query: str, sources: List[Dict[str, Any]]) -> str:
 
     return prompt
 
-
-def chat_template(query:str, results:pl.DataFrame):
-    query_str = f"""<|query_start|>{query}<|query_end|>"""
-    source_str = [f"<|source_start|><|source_id_start|>{r['url']}<|source_id_end|>{r['chunk']}<|source_end|>" for r in results.iter_rows(named=True)]
-    start_token = "<|source_analysis_start|>"
-    intermediate_str = query_str + "".join(source_str) + start_token
-    chat_str = re.sub(r'\s+', ' ', intermediate_str)
-    return chat_str
-
 def main(query:str):
     client = Client("http://127.0.0.1:7860/")
     result = client.predict(
